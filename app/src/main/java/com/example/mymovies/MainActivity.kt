@@ -1,12 +1,16 @@
-package com.example.mymovies.ui.main
+package com.example.mymovies
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.example.mymovies.R
-import com.example.mymovies.extensions.TAG
+import androidx.appcompat.app.AppCompatActivity
+import com.example.mymovies.core.TAG
+import com.example.mymovies.todo.data.EchoWebSocketListener
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.WebSocket
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,6 +19,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         Log.i(TAG, "onCreate")
+
+        var client = OkHttpClient()
+        val request: Request = Request.Builder().url("ws://192.168.0.101:3000/").build()
+        val listener = EchoWebSocketListener(com.example.mymovies.todo.data.MovieRepository)
+        val ws: WebSocket = client.newWebSocket(request, listener)
+//        client.dispatcher.executorService.shutdown()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

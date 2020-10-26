@@ -1,4 +1,4 @@
-package com.example.mymovies.extensions
+package com.example.mymovies.core
 
 val Any.TAG: String
     get() {
