@@ -10,10 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymovies.R
-import kotlinx.android.synthetic.main.view_movie.view.*
 import com.example.mymovies.core.TAG
 import com.example.mymovies.todo.data.Movie
 import com.example.mymovies.todo.movie.MovieEditFragment
+import kotlinx.android.synthetic.main.view_movie.view.*
+import android.widget.Filter;
 
 class MovieListAdapter(
     private val fragment: Fragment
@@ -34,6 +35,19 @@ class MovieListAdapter(
                 putString(MovieEditFragment.ITEM_ID, movie._id)
             })
         }
+    }
+
+    fun searchAndFilter(s: String, watched: String): MutableList<Movie> {
+        val filteredList: MutableList<Movie> = ArrayList()
+        val s2 = s.toLowerCase().trim()
+        for (item in movies) {
+            if (s2.isNotEmpty() && !item.name.contains(s2))
+                continue
+            if(watched.isNotEmpty() && item.isWatched.toString()!=watched)
+                continue
+            filteredList.add(item)
+        }
+        return filteredList
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -71,6 +72,50 @@ class MovieListFragment : Fragment() {
             }
         })
         movieModel.refresh()
+
+        search.doOnTextChanged { text, _, _, _ ->
+            movieModel.movies.observe(viewLifecycleOwner, { movie ->
+                movieListAdapter.movies = movie
+                var watchedFilter = "";
+                if (watched.isChecked) watchedFilter = "true"
+                if (not_watched.isChecked) watchedFilter = "false"
+                movieListAdapter.movies =
+                    movieListAdapter.searchAndFilter(search.text.toString(), watchedFilter)
+                movieListAdapter.notifyDataSetChanged()
+            })
+        }
+
+        watched.setOnClickListener {
+            movieModel.movies.observe(viewLifecycleOwner, { movie ->
+                movieListAdapter.movies = movie
+                if (watched.isChecked) {
+                    not_watched.isChecked = false
+                    movieListAdapter.movies =
+                        movieListAdapter.searchAndFilter(search.text.toString(), "true")
+                    movieListAdapter.notifyDataSetChanged()
+                } else {
+                    movieListAdapter.movies =
+                        movieListAdapter.searchAndFilter(search.text.toString(), "")
+                    movieListAdapter.notifyDataSetChanged()
+                }
+            })
+        }
+
+        not_watched.setOnClickListener {
+            movieModel.movies.observe(viewLifecycleOwner, { movie ->
+                movieListAdapter.movies = movie
+                if (not_watched.isChecked) {
+                    watched.isChecked = false
+                    movieListAdapter.movies =
+                        movieListAdapter.searchAndFilter(search.text.toString(), "false")
+                    movieListAdapter.notifyDataSetChanged()
+                } else {
+                    movieListAdapter.movies =
+                        movieListAdapter.searchAndFilter(search.text.toString(), "")
+                    movieListAdapter.notifyDataSetChanged()
+                }
+            })
+        }
     }
 
     override fun onDestroy() {
