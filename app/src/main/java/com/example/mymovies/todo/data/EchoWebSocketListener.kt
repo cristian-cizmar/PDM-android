@@ -1,5 +1,6 @@
 package com.example.mymovies.todo.data
 
+/*
 import android.util.Log
 import com.google.gson.Gson
 import okhttp3.Response
@@ -41,4 +42,4 @@ class EchoWebSocketListener(
     private fun output(txt: String) {
         Log.d("WSS", txt)
     }
-}
+}*/

@@ -10,12 +10,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.mymovies.R
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_movie_list.*
+import com.example.mymovies.auth.data.AuthRepository
 import com.example.mymovies.core.TAG
 
-class HomeFragment : Fragment() {
-    public lateinit var moviesAdapter: MoviesAdapter
-    private lateinit var viewModel: HomeViewModel
+class MovieListFragment : Fragment() {
+    private lateinit var movieListAdapter: MovieListAdapter
+    private lateinit var movieModel: MovieListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,40 +27,50 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_movie_list, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         Log.v(TAG, "onActivityCreated")
+        if (!AuthRepository.isLoggedIn(requireContext())) {
+            Log.d(TAG, "is not logged in")
+            findNavController().navigate(R.id.fragment_login)
+            return
+        }
         setupMovieList()
-
         fab.setOnClickListener {
-            Log.v(TAG, "add new movie")
-            findNavController().navigate(R.id.MovieEditFragment)
+            Log.v(TAG, "add new item")
+            findNavController().navigate(R.id.fragment_movie_edit)
+        }
+        log_out_button.setOnClickListener {
+            Log.v(TAG, "log out")
+            AuthRepository.logout()
+            findNavController().navigate(R.id.fragment_login)
         }
     }
 
     private fun setupMovieList() {
-        moviesAdapter = MoviesAdapter(this)
-        movie_list.adapter = moviesAdapter
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        viewModel.movies.observe(viewLifecycleOwner, { movies ->
-            Log.v(TAG, "update movies")
-            moviesAdapter.movies = movies
+        movieListAdapter = MovieListAdapter(this)
+        item_list.adapter = movieListAdapter
+        movieModel = ViewModelProvider(this).get(MovieListViewModel::class.java)
+        movieModel.movies.observe(viewLifecycleOwner, { movie ->
+            Log.v(TAG, "update items")
+            Log.d(TAG, "setupItemList items length: ${movie.size}")
+            movieListAdapter.movies = movie
         })
-        viewModel.loading.observe(viewLifecycleOwner, { loading ->
+        movieModel.loading.observe(viewLifecycleOwner, { loading ->
             Log.i(TAG, "update loading")
             progress.visibility = if (loading) View.VISIBLE else View.GONE
         })
-        viewModel.loadingError.observe(viewLifecycleOwner, { exception ->
+        movieModel.loadingError.observe(viewLifecycleOwner, { exception ->
             if (exception != null) {
                 Log.i(TAG, "update loading error")
                 val message = "Loading exception ${exception.message}"
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
             }
         })
-        viewModel.loadMovies()
+        movieModel.refresh()
     }
 
     override fun onDestroy() {

@@ -7,27 +7,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.mymovies.R
 import kotlinx.android.synthetic.main.fragment_movie_edit.*
 import com.example.mymovies.core.TAG
+import com.example.mymovies.todo.data.Movie
 
 class MovieEditFragment : Fragment() {
     companion object {
-        const val MOVIE_ID = "MOVIE_ID"
+        const val ITEM_ID = "ITEM_ID"
     }
 
     private lateinit var viewModel: MovieEditViewModel
     private var movieId: String? = null
+    private var movie: Movie? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v(TAG, "onCreate")
         arguments?.let {
-            if (it.containsKey(MOVIE_ID)) {
-                movieId = it.getString(MOVIE_ID).toString()
+            if (it.containsKey(ITEM_ID)) {
+                movieId = it.getString(ITEM_ID).toString()
             }
         }
 
@@ -41,29 +42,30 @@ class MovieEditFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_movie_edit, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.v(TAG, "onViewCreated")
-        movie_text.setText(movieId)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         Log.v(TAG, "onActivityCreated")
         setupViewModel()
         fab.setOnClickListener {
             Log.v(TAG, "save movie")
-            viewModel.saveOrUpdateMovie(movie_text.text.toString())
+            val i = movie
+            if (i != null) {
+                i.name = movie_name.text.toString()
+                i.length = movie_length.text.toString().toInt()
+                i.releaseDate = movie_date.text.toString()
+                i.isWatched = movie_is_watched.text.toString().toBoolean()
+                viewModel.saveOrUpdateMovie(i)
+            }
         }
 
+        delete_button.setOnClickListener {
+            viewModel.deleteItem(movieId ?: "")
+            findNavController().navigate(R.id.fragment_movie_list)
+        }
     }
 
     private fun setupViewModel() {
         viewModel = ViewModelProvider(this).get(MovieEditViewModel::class.java)
-        viewModel.movie.observe(viewLifecycleOwner, { movie ->
-            Log.v(TAG, "update movies")
-            movie_text.setText(movie.name)
-        })
         viewModel.fetching.observe(viewLifecycleOwner, { fetching ->
             Log.v(TAG, "update fetching")
             progress.visibility = if (fetching) View.VISIBLE else View.GONE
@@ -78,15 +80,26 @@ class MovieEditFragment : Fragment() {
                 }
             }
         })
-        viewModel.completed.observe(viewLifecycleOwner, Observer { completed ->
+        viewModel.completed.observe(viewLifecycleOwner, { completed ->
             if (completed) {
                 Log.v(TAG, "completed, navigate back")
-                findNavController().navigateUp()
+                findNavController().popBackStack()
             }
         })
         val id = movieId
-        if (id != null) {
-            viewModel.loadMovie(id)
+        if (id == null) {
+            movie = Movie("", "", 0, "01-01-1000", false);
+        } else {
+            viewModel.getMovieById(id).observe(viewLifecycleOwner, {
+                Log.v(TAG, "update items")
+                if (it != null) {
+                    movie = it
+                    movie_name.setText(it.name)
+                    movie_length.setText(it.length.toString())
+                    movie_date.setText(it.releaseDate)
+                    movie_is_watched.setText(it.isWatched.toString())
+                }
+            })
         }
     }
 }
