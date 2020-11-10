@@ -10,7 +10,8 @@ data class Movie(
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "length") var length: Int,
     @ColumnInfo(name = "releaseDate") var releaseDate: String,
-    @ColumnInfo(name = "isWatched") var isWatched: Boolean
+    @ColumnInfo(name = "isWatched") var isWatched: Boolean,
+    @ColumnInfo(name = "ownerUsername") var ownerUsername: String?
 ) {
     override fun toString(): String = name
 }

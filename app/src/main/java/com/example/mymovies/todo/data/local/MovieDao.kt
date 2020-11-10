@@ -6,8 +6,8 @@ import com.example.mymovies.todo.data.Movie
 
 @Dao
 interface MovieDao {
-    @Query("SELECT * from movies ORDER BY name ASC")
-    fun getAll(): LiveData<List<Movie>>
+    @Query("SELECT * from movies WHERE ownerUsername=:username ORDER BY name ASC")
+    fun getAll(username: String): LiveData<List<Movie>>
 
     @Query("SELECT * FROM movies WHERE _id=:id ")
     fun getById(id: String): LiveData<Movie>

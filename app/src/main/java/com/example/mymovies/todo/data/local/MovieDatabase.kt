@@ -5,12 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.mymovies.auth.data.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.mymovies.todo.data.Movie
 
-@Database(entities = [Movie::class], version = 6)
+@Database(entities = [Movie::class], version = 9)
 abstract class MovieDatabase : RoomDatabase() {
 
     abstract fun movieDao(): MovieDao
@@ -53,9 +54,9 @@ abstract class MovieDatabase : RoomDatabase() {
         }
 
         suspend fun populateDatabase(movieDao: MovieDao) {
-            movieDao.deleteAll()
-            val movie = Movie("1", "Hello",123,"10-10-2020",false);
-            movieDao.insert(movie)
+//            movieDao.deleteAll()
+//            val movie = Movie("1", "Hello",123,"10-10-2020",false);
+//            movieDao.insert(movie)
         }
     }
 

@@ -29,6 +29,13 @@ object AuthRepository {
         if (result is Result.Success<TokenHolder>) {
             setLoggedInUser(user, result.data, context)
         }
+
+        if (prefs == null)
+            prefs = context.getSharedPreferences("com.example.mymovies", Context.MODE_PRIVATE)
+        val editor = prefs!!.edit()
+        editor.putString("username", username)
+        editor.apply()
+
         return result
     }
 
@@ -47,9 +54,11 @@ object AuthRepository {
         if (prefs == null)
             prefs = context.getSharedPreferences("com.example.mymovies", Context.MODE_PRIVATE)
         val token = prefs!!.getString("token", "")!!
-        if(token != "")
+        if (token != "")
             Api.tokenInterceptor.token = token
 
         return token != ""
     }
+
+    fun getUsername(): String = prefs!!.getString("username", "")!!
 }

@@ -1,23 +1,28 @@
 package com.example.mymovies.todo.data
 
 import androidx.lifecycle.*
+import com.example.mymovies.auth.data.AuthRepository
 import com.example.mymovies.todo.data.local.MovieDao
 import com.example.mymovies.core.Result
 import com.example.mymovies.todo.data.remote.MovieApi
 
-class MovieRepository(private val movieDao: MovieDao) {
+class MovieRepository(val movieDao: MovieDao) {
 
-    var movies =  MutableLiveData<List<Movie>>().apply { postValue(emptyList()) }
+    var movies = MediatorLiveData<List<Movie>>().apply { postValue(emptyList()) }
 
     suspend fun refresh(): Result<Boolean> {
         try {
             val moviesApi = MovieApi.service.find()
             movies.value = moviesApi
             for (movie in moviesApi) {
+                movie.ownerUsername = AuthRepository.getUsername()
                 movieDao.insert(movie)
             }
             return Result.Success(true)
         } catch (e: Exception) {
+            movies.addSource(movieDao.getAll(AuthRepository.getUsername())) {
+                movies.value = it
+            }
             return Result.Error(e)
         }
     }

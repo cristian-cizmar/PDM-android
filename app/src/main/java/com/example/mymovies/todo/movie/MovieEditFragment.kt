@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.mymovies.R
+import com.example.mymovies.auth.data.AuthRepository
 import kotlinx.android.synthetic.main.fragment_movie_edit.*
 import com.example.mymovies.core.TAG
 import com.example.mymovies.todo.data.Movie
@@ -88,7 +89,7 @@ class MovieEditFragment : Fragment() {
         })
         val id = movieId
         if (id == null) {
-            movie = Movie("", "", 0, "01-01-1000", false);
+            movie = Movie("", "", 0, "01-01-1000", false, AuthRepository.getUsername());
         } else {
             viewModel.getMovieById(id).observe(viewLifecycleOwner, {
                 Log.v(TAG, "update items")
