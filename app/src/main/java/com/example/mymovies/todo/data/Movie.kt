@@ -11,7 +11,9 @@ data class Movie(
     @ColumnInfo(name = "length") var length: Int,
     @ColumnInfo(name = "releaseDate") var releaseDate: String,
     @ColumnInfo(name = "isWatched") var isWatched: Boolean,
-    @ColumnInfo(name = "ownerUsername") var ownerUsername: String?
+    @ColumnInfo(name = "ownerUsername") var ownerUsername: String?,
+    @ColumnInfo(name = "upToDateWithBackend") var upToDateWithBackend: Boolean?,
+    @ColumnInfo(name = "backendUpdateType") var backendUpdateType: String?
 ) {
     override fun toString(): String = name
 }

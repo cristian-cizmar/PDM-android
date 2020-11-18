@@ -8,6 +8,7 @@ import com.example.mymovies.todo.data.local.MovieDatabase
 import com.example.mymovies.core.Result
 import com.example.mymovies.core.TAG
 import com.example.mymovies.todo.data.Movie
+import com.example.mymovies.todo.data.MovieRepoHelper
 import com.example.mymovies.todo.data.MovieRepository
 
 class MovieListViewModel(application: Application) : AndroidViewModel(application) {
@@ -24,6 +25,8 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         val movieDao = MovieDatabase.getDatabase(application, viewModelScope).movieDao()
         movieRepository = MovieRepository(movieDao)
         movies = movieRepository.movies
+
+        MovieRepoHelper.setMovieRepo(movieRepository)
     }
 
     fun refresh() {

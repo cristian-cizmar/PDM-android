@@ -89,7 +89,7 @@ class MovieEditFragment : Fragment() {
         })
         val id = movieId
         if (id == null) {
-            movie = Movie("", "", 0, "01-01-1000", false, AuthRepository.getUsername());
+            movie = Movie("", "", 0, "01-01-1000", false, AuthRepository.getUsername(), true, "");
         } else {
             viewModel.getMovieById(id).observe(viewLifecycleOwner, {
                 Log.v(TAG, "update items")
