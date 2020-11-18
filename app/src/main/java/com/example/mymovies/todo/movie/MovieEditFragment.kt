@@ -14,6 +14,7 @@ import com.example.mymovies.auth.data.AuthRepository
 import kotlinx.android.synthetic.main.fragment_movie_edit.*
 import com.example.mymovies.core.TAG
 import com.example.mymovies.todo.data.Movie
+import java.util.*
 
 class MovieEditFragment : Fragment() {
     companion object {
@@ -89,12 +90,13 @@ class MovieEditFragment : Fragment() {
         })
         val id = movieId
         if (id == null) {
-            movie = Movie("", "", 0, "01-01-1000", false, AuthRepository.getUsername(), true, "");
+            movie = Movie("", "", 0, "01-01-1000", false, AuthRepository.getUsername(), true, "", 0);
         } else {
             viewModel.getMovieById(id).observe(viewLifecycleOwner, {
                 Log.v(TAG, "update items")
                 if (it != null) {
                     movie = it
+                    movie!!.openTime = Date().time
                     movie_name.setText(it.name)
                     movie_length.setText(it.length.toString())
                     movie_date.setText(it.releaseDate)

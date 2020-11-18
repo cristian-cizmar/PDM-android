@@ -13,7 +13,8 @@ data class Movie(
     @ColumnInfo(name = "isWatched") var isWatched: Boolean,
     @ColumnInfo(name = "ownerUsername") var ownerUsername: String?,
     @ColumnInfo(name = "upToDateWithBackend") var upToDateWithBackend: Boolean?,
-    @ColumnInfo(name = "backendUpdateType") var backendUpdateType: String?
+    @ColumnInfo(name = "backendUpdateType") var backendUpdateType: String?,
+    @ColumnInfo(name = "openTime") var openTime: Long?
 ) {
     override fun toString(): String = name
 }

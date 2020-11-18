@@ -3,6 +3,7 @@ package com.example.mymovies.todo.movie
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.mymovies.MyProperties
 import kotlinx.coroutines.launch
 import com.example.mymovies.todo.data.local.MovieDatabase
 import com.example.mymovies.core.Result
@@ -48,6 +49,7 @@ class MovieEditViewModel(application: Application) : AndroidViewModel(applicatio
                 }
                 is Result.Error -> {
                     Log.w(TAG, "saveOrUpdateItem failed", result.exception);
+                    MyProperties.instance.snackbarMessage.postValue("${result.exception.message}")
                     mutableException.value = result.exception
                 }
             }

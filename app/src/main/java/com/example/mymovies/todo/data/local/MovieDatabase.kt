@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.mymovies.todo.data.Movie
 
-@Database(entities = [Movie::class], version = 10)
+@Database(entities = [Movie::class], version = 11)
 abstract class MovieDatabase : RoomDatabase() {
 
     abstract fun movieDao(): MovieDao
