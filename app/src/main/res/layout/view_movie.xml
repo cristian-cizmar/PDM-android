@@ -44,4 +44,14 @@
         app:layout_constraintStart_toEndOf="@id/length"
         app:layout_constraintTop_toBottomOf="@id/date" />
 
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="#dedede"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

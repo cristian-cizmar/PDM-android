@@ -1,5 +1,6 @@
 package com.example.mymovies.todo.movies
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import com.example.mymovies.todo.data.Movie
 import com.example.mymovies.todo.movie.MovieEditFragment
 import kotlinx.android.synthetic.main.view_movie.view.*
 import android.widget.Filter;
+import android.widget.ImageView
 
 class MovieListAdapter(
     private val fragment: Fragment
@@ -43,7 +45,7 @@ class MovieListAdapter(
         for (item in movies) {
             if (s2.isNotEmpty() && !item.name.contains(s2))
                 continue
-            if(watched.isNotEmpty() && item.isWatched.toString()!=watched)
+            if (watched.isNotEmpty() && item.isWatched.toString() != watched)
                 continue
             filteredList.add(item)
         }
@@ -66,6 +68,7 @@ class MovieListAdapter(
         holder.releaseDate.date.text = movie.releaseDate
         holder.isWatched.isWatched.text = movie.isWatched.toString()
         holder.itemView.setOnClickListener(onMovieClick)
+        holder.ivImage.setImageURI(Uri.parse(movie.imageURI))
     }
 
     override fun getItemCount() = movies.size
@@ -75,5 +78,6 @@ class MovieListAdapter(
         val length: TextView = view.length
         val releaseDate: TextView = view.date
         val isWatched: TextView = view.isWatched
+        val ivImage: ImageView = view.ivImage
     }
 }

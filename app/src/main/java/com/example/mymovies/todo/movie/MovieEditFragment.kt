@@ -1,11 +1,21 @@
 package com.example.mymovies.todo.movie
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -14,6 +24,9 @@ import com.example.mymovies.auth.data.AuthRepository
 import kotlinx.android.synthetic.main.fragment_movie_edit.*
 import com.example.mymovies.core.TAG
 import com.example.mymovies.todo.data.Movie
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MovieEditFragment : Fragment() {
@@ -25,6 +38,10 @@ class MovieEditFragment : Fragment() {
     private var movieId: String? = null
     private var movie: Movie? = null
 
+    private val REQUEST_PERMISSION = 10
+    private val REQUEST_IMAGE_CAPTURE = 1
+    lateinit var currentPhotoPath: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v(TAG, "onCreate")
@@ -33,7 +50,11 @@ class MovieEditFragment : Fragment() {
                 movieId = it.getString(ITEM_ID).toString()
             }
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        checkCameraPermission()
     }
 
     override fun onCreateView(
@@ -64,6 +85,64 @@ class MovieEditFragment : Fragment() {
             viewModel.deleteItem(movieId ?: "")
             findNavController().navigate(R.id.fragment_movie_list)
         }
+
+        btCapturePhoto.setOnClickListener { openCamera() }
+    }
+
+    private fun checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_PERMISSION
+            )
+        }
+    }
+
+    private fun openCamera() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
+            intent.resolveActivity(requireActivity().packageManager)?.also {
+                val photoFile: File? = try {
+                    createCapturedPhoto()
+                } catch (ex: IOException) {
+                    null
+                }
+                Log.d(TAG, "photofile $photoFile")
+                photoFile?.also {
+                    val photoURI = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.example.mymovies.fileprovider",
+                        it
+                    )
+                    Log.d(TAG, "photoURI: $photoURI");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+                }
+            }
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createCapturedPhoto(): File {
+        val timestamp: String = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
+        val storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        var f = File.createTempFile("PHOTO_${timestamp}", ".jpg", storageDir).apply {
+            currentPhotoPath = absolutePath
+        }
+        movie?.imageURI = currentPhotoPath
+        return f
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                val uri = Uri.parse(currentPhotoPath)
+                ivImage.setImageURI(uri)
+            }
+        }
     }
 
     private fun setupViewModel() {
@@ -90,7 +169,18 @@ class MovieEditFragment : Fragment() {
         })
         val id = movieId
         if (id == null) {
-            movie = Movie("", "", 0, "01-01-1000", false, AuthRepository.getUsername(), true, "", 0);
+            movie = Movie(
+                "",
+                "",
+                0,
+                "01-01-1000",
+                false,
+                AuthRepository.getUsername(),
+                true,
+                "",
+                0,
+                ""
+            )
         } else {
             viewModel.getMovieById(id).observe(viewLifecycleOwner, {
                 Log.v(TAG, "update items")
@@ -101,6 +191,10 @@ class MovieEditFragment : Fragment() {
                     movie_length.setText(it.length.toString())
                     movie_date.setText(it.releaseDate)
                     movie_is_watched.setText(it.isWatched.toString())
+                    if (!movie?.imageURI.isNullOrBlank()) {
+                        ivImage.setImageURI(Uri.parse(movie?.imageURI))
+                        Log.d(TAG, "change image to ${movie?.imageURI}")
+                    }
                 }
             })
         }

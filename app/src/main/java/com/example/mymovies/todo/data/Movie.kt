@@ -14,7 +14,8 @@ data class Movie(
     @ColumnInfo(name = "ownerUsername") var ownerUsername: String?,
     @ColumnInfo(name = "upToDateWithBackend") var upToDateWithBackend: Boolean?,
     @ColumnInfo(name = "backendUpdateType") var backendUpdateType: String?,
-    @ColumnInfo(name = "openTime") var openTime: Long?
+    @ColumnInfo(name = "openTime") var openTime: Long?,
+    @ColumnInfo(name = "imageURI") var imageURI: String?
 ) {
     override fun toString(): String = name
 }
