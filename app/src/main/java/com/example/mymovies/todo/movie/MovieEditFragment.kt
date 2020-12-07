@@ -21,9 +21,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.mymovies.R
 import com.example.mymovies.auth.data.AuthRepository
-import kotlinx.android.synthetic.main.fragment_movie_edit.*
 import com.example.mymovies.core.TAG
 import com.example.mymovies.todo.data.Movie
+import com.example.mymovies.todo.data.local.LocationHelper
+import com.example.mymovies.todo.maps.BasicMapActivity
+import com.example.mymovies.todo.maps.EventsActivity
+import kotlinx.android.synthetic.main.fragment_movie_edit.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -55,6 +58,7 @@ class MovieEditFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         checkCameraPermission()
+        initMovieLocation()
     }
 
     override fun onCreateView(
@@ -87,6 +91,20 @@ class MovieEditFragment : Fragment() {
         }
 
         btCapturePhoto.setOnClickListener { openCamera() }
+
+        btnLocation.setOnClickListener {
+            LocationHelper.setPinLocation(movie?.latitude!!, movie?.longitude!!)
+            val intent = Intent(requireContext(), EventsActivity::class.java)
+            startActivity(intent)
+        }
+
+        txtLocation.setOnClickListener {
+            if (movie != null && movie?.latitude != null && movie?.longitude != null) {
+                LocationHelper.setPinLocation(movie?.latitude!!, movie?.longitude!!)
+                val intent = Intent(requireContext(), BasicMapActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 
     private fun checkCameraPermission() {
@@ -145,6 +163,15 @@ class MovieEditFragment : Fragment() {
         }
     }
 
+    private fun initMovieLocation() {
+        val location = LocationHelper.getLocationAndClear()
+        if (location.first != 0f || location.second != 0f) {
+            txtLocation.text = "${location.first} ${location.second}"
+            movie?.latitude = location.first
+            movie?.longitude = location.second
+        }
+    }
+
     private fun setupViewModel() {
         viewModel = ViewModelProvider(this).get(MovieEditViewModel::class.java)
         viewModel.fetching.observe(viewLifecycleOwner, { fetching ->
@@ -179,7 +206,9 @@ class MovieEditFragment : Fragment() {
                 true,
                 "",
                 0,
-                ""
+                "",
+                0f,
+                0f
             )
         } else {
             viewModel.getMovieById(id).observe(viewLifecycleOwner, {
@@ -195,6 +224,7 @@ class MovieEditFragment : Fragment() {
                         ivImage.setImageURI(Uri.parse(movie?.imageURI))
                         Log.d(TAG, "change image to ${movie?.imageURI}")
                     }
+                    txtLocation.text = "${it.latitude} ${it.longitude}"
                 }
             })
         }

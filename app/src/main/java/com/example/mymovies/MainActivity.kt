@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.mymovies.core.TAG
 import com.example.mymovies.todo.data.local.DeleteHelper
+import com.example.mymovies.todo.data.local.LocationHelper
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "onCreate")
 
         DeleteHelper.init(this)
+        LocationHelper.init(this)
         observeConnectivity()
         observeSnackbar()
     }

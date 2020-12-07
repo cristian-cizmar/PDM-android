@@ -15,7 +15,9 @@ data class Movie(
     @ColumnInfo(name = "upToDateWithBackend") var upToDateWithBackend: Boolean?,
     @ColumnInfo(name = "backendUpdateType") var backendUpdateType: String?,
     @ColumnInfo(name = "openTime") var openTime: Long?,
-    @ColumnInfo(name = "imageURI") var imageURI: String?
+    @ColumnInfo(name = "imageURI") var imageURI: String?,
+    @ColumnInfo(name = "latitude") var latitude: Float?,
+    @ColumnInfo(name = "longitude") var longitude: Float?,
 ) {
     override fun toString(): String = name
 }
