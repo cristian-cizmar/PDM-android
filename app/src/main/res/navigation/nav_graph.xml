@@ -20,8 +20,11 @@
         <action
             android:id="@+id/action_MovieListFragment_to_MovieEditFragment"
             app:destination="@id/fragment_movie_edit"
-            app:popUpTo="@id/fragment_movie_list"
-            app:popUpToInclusive="true" />
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popUpTo="@id/fragment_movie_list" />
     </fragment>
     <fragment
         android:id="@+id/fragment_movie_edit"

@@ -33,7 +33,7 @@ class MovieListAdapter(
     init {
         onMovieClick = View.OnClickListener { view ->
             val movie = view.tag as Movie
-            fragment.findNavController().navigate(R.id.fragment_movie_edit, Bundle().apply {
+            fragment.findNavController().navigate(R.id.action_MovieListFragment_to_MovieEditFragment, Bundle().apply {
                 putString(MovieEditFragment.ITEM_ID, movie._id)
             })
         }

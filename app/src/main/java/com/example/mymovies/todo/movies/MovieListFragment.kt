@@ -6,6 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
+import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -43,6 +46,22 @@ class MovieListFragment : Fragment() {
 
         MovieRepoHelper.setViewLifecycleOwner(viewLifecycleOwner)
         observeInternetConnection()
+
+        val animSet = AnimationSet(true)
+        val firstAnimation = TranslateAnimation(
+            Animation.ABSOLUTE, 0.0f, Animation.ABSOLUTE, -100.0f,
+            Animation.ABSOLUTE, 0.0f, Animation.ABSOLUTE, -100.0f
+        )
+        firstAnimation.duration = 1000
+        animSet.addAnimation(firstAnimation)
+        val secondAnimation = TranslateAnimation(
+            Animation.ABSOLUTE, 0.0f, Animation.ABSOLUTE, 100.0f,
+            Animation.ABSOLUTE, 0.0f, Animation.ABSOLUTE, 100.0f
+        )
+        secondAnimation.duration = 2000
+        secondAnimation.startOffset = 3500
+        animSet.addAnimation(secondAnimation)
+        fab.startAnimation(animSet)
     }
 
     private fun observeInternetConnection(){
@@ -117,7 +136,7 @@ class MovieListFragment : Fragment() {
 
         fab.setOnClickListener {
             Log.v(TAG, "add new item")
-            findNavController().navigate(R.id.fragment_movie_edit)
+            findNavController().navigate(R.id.action_MovieListFragment_to_MovieEditFragment)
         }
 
         log_out_button.setOnClickListener {
